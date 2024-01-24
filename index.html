@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEWZ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="img flex">
+        <img src="news.webp">
+    </div>
+   <nav>
+    <div class="main-nav container flex">
+        <div class="nav-links">
+            <ul class="flex">
+                <li class="hover-link nav-item">Politics</li>
+                <li class="hover-link nav-item">Finance</li>
+                <li class="hover-link nav-item">India</li>
+                <li class="hover-link nav-item">Sports
+                    
+                </li>
+            </ul>
+        </div>
+        <div class="search-bar">
+            <input type="text" class="news-input" placeholder="eg:science">
+            <button class="search-button">search</button>
+        </div>
+    </div>
+   </nav>
+   <main>
+    <div class="cards-container container flex">
+        <div class
+        ="card">
+            <div class="card-header">
+                <img src="clear.jpg" alt="news-image" aria-placeholder="image">
+            </div>
+            <div class="card-content">
+                <h3 id="news-title">This is content</h3>
+                <h6 class="news-source">abc 12/03/2024</h6>
+                <h5 class="blink">Click to read</h5>
+                <p class="news-desc">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Natus, sit debitis. Doloribus fugit sapiente ut! Quis voluptatem amet laborum ad sapiente porro officiis, ex id illo, excepturi non veritatis fugiat?</p>
+            </div>
+        </div>
+    </div>
+   </main>
+</body>
+<script>
+    apiKey="1f8aa9386b3145f6b2a60284a7bb509e";
+    let URL =
+  `https://newsapi.org/v2/everything?q=apple&from=2024-01-03&to=2024-01-03&sortBy=popularity&apiKey=${apiKey}`;
+window.addEventListener("load",()=>fetchNews("india"));
+const newsContainer=document.querySelector(".cards-container");
+const btn=document.querySelector(".search-button");
+const input=document.querySelector(".news-input");
+const lists=document.querySelectorAll(".nav-links li");
+btn.addEventListener("click",()=>{
+    let inputVal=input.value;
+fetchNews(inputVal);
+})
+lists.forEach(list=>{
+    list.addEventListener("click",()=>{
+       lists.forEach(sublist=>{
+       sublist.classList.remove("selected")
+       })
+        let category=list.textContent.trim()
+        
+        .toLocaleLowerCase();
+        fetchNews(category);
+        input.value=category;
+        list.classList.add("selected");
+        input.addEventListener("input",()=>{
+            list.classList.remove("selected")
+        })
+    })
+})
+
+async function fetchNews(inputVal){
+    let BASE_URL=`https://newsapi.org/v2/everything?q=${inputVal}&from=2024-01-03&to=2024-01-03&sortBy=popularity&apiKey=${apiKey}`
+    const response=await fetch(BASE_URL);
+    const data=await response.json();
+    newsContainer.innerHTML = '';
+    let news=data.articles;
+    news.forEach(article => {
+        if(article.urlToImage){
+            console.log(article)
+        let card=document.createElement("div");
+        card.classList.add(`card`);
+        card.innerHTML=`<div class="card-header"><img src="${article.urlToImage}"></div>
+       <div class="card-content">
+        <h3 id="news-title">${article.title}</h3>
+        <h6 class="news-source">${article.source.name}-${new Date(article.publishedAt).toLocaleString()}</h6>
+        <h5 class="blink">Click to Read<h5>
+        <p class="news-desc">${article.description}</p>
+       
+        </div>`
+
+        newsContainer.appendChild(card);
+        card.addEventListener("click",()=>{
+            window.open(article.url,"_blank")
+        })
+    }
+    });
+}
+
+
+</script>
+</html>
